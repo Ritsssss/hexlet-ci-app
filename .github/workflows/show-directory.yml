@@ -1,10 +1,37 @@
 name: hexlet-ci-app
-on: push
+on:
+  push:
+  pull_request:
+
+env:
+  CI: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: '>=18.x'
+
     steps:
       - uses: actions/checkout@v4
-      - run: make setup
-      - run: make test
-      - run: make lint
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install project
+        run: make setup
+
+      - name: Run tests
+        run: make test
+
+      - name: Run linter
+        run: make lint
+
+      - name: Hello from Hexlet
+        uses: hexlet-components/hello-from-hexlet-action@release
+
